@@ -29,9 +29,9 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .requestMatchers("/api/v*/registration/**").permitAll()
                 .requestMatchers("/api/v*/prompt/**").permitAll()
+                .requestMatchers("/api/v*/login/**").permitAll()
                 .anyRequest()
-                .authenticated().and()
-                .formLogin();
+                .authenticated();
         return http.build();
 
 
