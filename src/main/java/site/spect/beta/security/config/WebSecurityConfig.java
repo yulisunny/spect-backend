@@ -30,11 +30,10 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/v*/registration/**").permitAll()
                 .requestMatchers("/api/v*/prompt/**").permitAll()
                 .requestMatchers("/api/v*/login/**").permitAll()
+                .requestMatchers("/api/v*/file/**").permitAll()
                 .anyRequest()
                 .authenticated();
         return http.build();
-
-
     }
 
     @Bean
