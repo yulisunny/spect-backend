@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import site.spect.beta.FileService;
 
 import java.io.IOException;
 
@@ -28,7 +27,7 @@ public class FileController {
     public ResponseEntity<?> download(@PathVariable String fileName) throws IOException {
         byte[] fileData = fileService.readFileFromDisk(fileName);
         return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.IMAGE_JPEG)
+                .contentType(MediaType.APPLICATION_PDF)
                 .body(fileData);
     }
 

@@ -1,4 +1,4 @@
-package site.spect.beta;
+package site.spect.beta.file;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
