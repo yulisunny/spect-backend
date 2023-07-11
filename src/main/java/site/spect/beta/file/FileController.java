@@ -23,9 +23,9 @@ public class FileController {
         return fileService.saveFileToDisk(file);
     }
 
-    @GetMapping("/{fileName}")
-    public ResponseEntity<?> download(@PathVariable String fileName) throws IOException {
-        byte[] fileData = fileService.readFileFromDisk(fileName);
+    @GetMapping
+    public ResponseEntity<?> download(@RequestBody FileGetRequest fileGetRequest) throws IOException {
+        byte[] fileData = fileService.readFileFromDisk(fileGetRequest.getFileName());
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileData);
