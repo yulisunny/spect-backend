@@ -8,7 +8,7 @@ server:
     include-binding-errors: always
   servlet:
     session:
-      timeout: 0
+      timeout: -1
 
 spring:
   datasource:
