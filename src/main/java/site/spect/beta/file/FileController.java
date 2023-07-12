@@ -24,8 +24,9 @@ public class FileController {
     }
 
     @GetMapping
-    public ResponseEntity<?> download(@RequestBody FileGetRequest fileGetRequest) throws IOException {
-        byte[] fileData = fileService.readFileFromDisk(fileGetRequest.getFileName());
+    public ResponseEntity<?> download(@RequestParam("fileName") String fileName, @RequestParam("userId") Long userId)
+            throws IOException {
+        byte[] fileData = fileService.readFileFromDisk(fileName);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileData);

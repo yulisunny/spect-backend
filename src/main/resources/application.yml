@@ -1,4 +1,7 @@
 folder-path: "/Users/senyu/"
+logging:
+  file:
+    path: "/Users/senyu/log/"
 server:
   error:
     include-message: always
