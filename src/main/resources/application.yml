@@ -6,6 +6,9 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+  servlet:
+    session:
+      timeout: 0
 
 spring:
   datasource:
