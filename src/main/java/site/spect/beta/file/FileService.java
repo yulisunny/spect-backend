@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -19,10 +20,11 @@ public class FileService {
     private SpectUserRepository spectUserRepo;
     private FileDataRepository fileDataRepo;
     private Environment environment;
+    private PdfSinglePageExtractor pdfSinglePageExtractor;
 
     public boolean saveFileToDisk(MultipartFile file, Long userId) throws IOException {
         String folderPath = environment.getProperty("folder-path");
-        String filePath = folderPath+file.getOriginalFilename();
+        String filePath = folderPath + file.getOriginalFilename();
         file.transferTo(new File(filePath));
         SpectUser user = spectUserRepo.getReferenceById(userId);
         FileData fileData = new FileData(user, file.getOriginalFilename(), LocalDateTime.now());
@@ -30,10 +32,16 @@ public class FileService {
         return true;
     }
 
-    public byte[] readFileFromDisk(String fileName) throws IOException {
+    public byte[] readFileFromDisk(String fileName, Optional<Integer> maybePageNumber) throws IOException {
         String folderPath = environment.getProperty("folder-path");
         String filePath = folderPath + fileName;
-        return Files.readAllBytes(new File(filePath).toPath());
+        File file = new File(filePath);
+
+        if (maybePageNumber.isPresent()) {
+            return pdfSinglePageExtractor.extract(file, maybePageNumber.get());
+        }
+
+        return Files.readAllBytes(file.toPath());
     }
 
     public boolean doesUserHaveFiles(Long userId) {

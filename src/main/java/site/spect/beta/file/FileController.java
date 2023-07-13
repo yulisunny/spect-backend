@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(maxAge = 3600)
@@ -24,9 +25,9 @@ public class FileController {
     }
 
     @GetMapping
-    public ResponseEntity<?> download(@RequestParam("fileName") String fileName, @RequestParam("userId") Long userId)
-            throws IOException {
-        byte[] fileData = fileService.readFileFromDisk(fileName);
+    public ResponseEntity<?> download(@RequestParam("fileName") String fileName, @RequestParam("userId") Long userId,
+                                      @RequestParam("pageNumber") Optional<Integer> maybePageNumber) throws IOException {
+        byte[] fileData = fileService.readFileFromDisk(fileName, maybePageNumber);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileData);
