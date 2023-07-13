@@ -18,9 +18,9 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping
-    public boolean upload(@RequestParam("file") MultipartFile file, @RequestParam("user_id") Long userId)
+    public boolean upload(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId)
             throws IOException {
-        return fileService.saveFileToDisk(file);
+        return fileService.saveFileToDisk(file, userId);
     }
 
     @GetMapping
@@ -30,6 +30,11 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileData);
+    }
+
+    @GetMapping("/doesUserHaveFiles")
+    public boolean doesUserHaveFiles(@RequestParam("userId") Long userId) {
+        return fileService.doesUserHaveFiles(userId);
     }
 
 }
