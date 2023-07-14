@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface FileDataRepository extends JpaRepository<FileData, Long> {
 
-    boolean existsFileDataByUser_Id(Long userId);
+    boolean existsFileDataByUser_Id_AndStateIsNot(Long userId, FileData.State state);
+
+    FileData getFileDataByFileNameAndUser_Id(String fileName, Long userId);
 
 }

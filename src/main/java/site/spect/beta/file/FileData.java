@@ -31,12 +31,25 @@ public class FileData {
     @ManyToOne
     private SpectUser user;
     private String fileName;
+    private State state;
     private LocalDateTime uploadedAt;
+    private LocalDateTime deletedAt;
+
+    public enum State {
+        CREATED,
+        DELETED
+    }
 
     public FileData(SpectUser user, String fileName, LocalDateTime uploadedAt) {
         this.user = user;
         this.fileName = fileName;
+        this.state = State.CREATED;
         this.uploadedAt = uploadedAt;
+    }
+
+    public void markAsDeleted(LocalDateTime when) {
+        this.state = State.DELETED;
+        this.deletedAt = when;
     }
 
 }

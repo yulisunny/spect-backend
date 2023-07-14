@@ -33,6 +33,11 @@ public class FileController {
                 .body(fileData);
     }
 
+    @PostMapping("/delete")
+    public boolean delete(@RequestParam("fileName") String fileName, @RequestParam("userId") Long userId) {
+        return fileService.markFileAsDeleted(fileName, userId);
+    }
+
     @GetMapping("/doesUserHaveFiles")
     public boolean doesUserHaveFiles(@RequestParam("userId") Long userId) {
         return fileService.doesUserHaveFiles(userId);

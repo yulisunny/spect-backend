@@ -44,8 +44,15 @@ public class FileService {
         return Files.readAllBytes(file.toPath());
     }
 
+    public boolean markFileAsDeleted(String fileName, Long userId) {
+        FileData fileData = fileDataRepo.getFileDataByFileNameAndUser_Id(fileName, userId);
+        fileData.markAsDeleted(LocalDateTime.now());
+        fileDataRepo.save(fileData);
+        return true;
+    }
+
     public boolean doesUserHaveFiles(Long userId) {
-        return fileDataRepo.existsFileDataByUser_Id(userId);
+        return fileDataRepo.existsFileDataByUser_Id_AndStateIsNot(userId, FileData.State.DELETED);
     }
 
 }
