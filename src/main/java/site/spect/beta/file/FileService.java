@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,15 +25,28 @@ public class FileService {
 
     public boolean saveFileToDisk(MultipartFile file, Long userId) throws IOException {
         String folderPath = environment.getProperty("folder-path");
-        String filePath = folderPath + file.getOriginalFilename();
+        String fileName = file.getOriginalFilename();
+        String filePath = folderPath + fileName;
         file.transferTo(new File(filePath));
-        SpectUser user = spectUserRepo.getReferenceById(userId);
-        FileData fileData = new FileData(user, file.getOriginalFilename(), LocalDateTime.now());
-        fileDataRepo.save(fileData);
+        List<FileData> existingFileData = fileDataRepo.getFileDataByFileNameAndUser_IdAndState(fileName, userId, FileData.State.CREATED);
+        if (existingFileData.size() > 0) {
+            for (FileData existingFileDatum : existingFileData) {
+                existingFileDatum.setUploadedAt(LocalDateTime.now());
+                fileDataRepo.save(existingFileDatum);
+            }
+        } else {
+            SpectUser user = spectUserRepo.getReferenceById(userId);
+            FileData fileData = new FileData(user, fileName, LocalDateTime.now());
+            fileDataRepo.save(fileData);
+        }
         return true;
     }
 
-    public byte[] readFileFromDisk(String fileName, Optional<Integer> maybePageNumber) throws IOException {
+    public byte[] readFileFromDisk(String fileName, Long userId, Optional<Integer> maybePageNumber) throws IOException {
+        List<FileData> fileData = fileDataRepo.getFileDataByFileNameAndUser_IdAndState(fileName, userId, FileData.State.CREATED);
+        if (fileData.isEmpty()) {
+            return null;
+        }
         String folderPath = environment.getProperty("folder-path");
         String filePath = folderPath + fileName;
         File file = new File(filePath);
@@ -44,10 +58,17 @@ public class FileService {
         return Files.readAllBytes(file.toPath());
     }
 
-    public boolean markFileAsDeleted(String fileName, Long userId) {
-        FileData fileData = fileDataRepo.getFileDataByFileNameAndUser_Id(fileName, userId);
-        fileData.markAsDeleted(LocalDateTime.now());
-        fileDataRepo.save(fileData);
+    public boolean markFileAsDeleted(Optional<String> maybeFileName, Long userId) {
+        List<FileData> fileData;
+        if (maybeFileName.isPresent()) {
+            fileData = fileDataRepo.getFileDataByFileNameAndUser_IdAndState(maybeFileName.get(), userId, FileData.State.CREATED);
+        } else {
+            fileData = fileDataRepo.getFileDataByUser_IdAndState(userId, FileData.State.CREATED);
+        }
+        for (FileData filaDatum : fileData) {
+            filaDatum.markAsDeleted(LocalDateTime.now());
+        }
+        fileDataRepo.saveAll(fileData);
         return true;
     }
 

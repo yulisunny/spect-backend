@@ -27,15 +27,18 @@ public class FileController {
     @GetMapping
     public ResponseEntity<?> download(@RequestParam("fileName") String fileName, @RequestParam("userId") Long userId,
                                       @RequestParam("pageNumber") Optional<Integer> maybePageNumber) throws IOException {
-        byte[] fileData = fileService.readFileFromDisk(fileName, maybePageNumber);
+        byte[] fileData = fileService.readFileFromDisk(fileName, userId, maybePageNumber);
+        if (fileData == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileData);
     }
 
     @PostMapping("/delete")
-    public boolean delete(@RequestParam("fileName") String fileName, @RequestParam("userId") Long userId) {
-        return fileService.markFileAsDeleted(fileName, userId);
+    public boolean delete(@RequestParam("userId") Long userId, @RequestParam("fileName") Optional<String> maybeFileName) {
+        return fileService.markFileAsDeleted(maybeFileName, userId);
     }
 
     @GetMapping("/doesUserHaveFiles")
